@@ -21,6 +21,30 @@ const NODE_ENV = process.env.NODE_ENV || "development";
 console.error(`Plasma MCP Server starting in ${NODE_ENV} mode`);
 console.error(`Using server URL: ${PLASMA_SERVER_URL}`);
 
+// Component validation
+let cachedComponents: string[] | null = null;
+
+async function getValidComponentNames(): Promise<string[]> {
+  if (cachedComponents) {
+    return cachedComponents;
+  }
+  
+  try {
+    const components = await fetchComponents();
+    cachedComponents = components;
+    return components;
+  } catch (error) {
+    console.error("Failed to fetch components for validation:", error);
+    // Return empty array if we can't fetch components
+    return [];
+  }
+}
+
+async function validateComponentName(componentName: string): Promise<boolean> {
+  const validNames = await getValidComponentNames();
+  return validNames.includes(componentName);
+}
+
 // HTTP fetching functions
 async function fetchComponents(): Promise<any[]> {
   const response = await fetch(`${PLASMA_SERVER_URL}/components.json`);
@@ -245,6 +269,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           isError: true,
         };
       }
+
+      // Validate component name
+      const isValid = await validateComponentName(componentName);
+      if (!isValid) {
+        const validNames = await getValidComponentNames();
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Component "${componentName}" not found. Available components: ${validNames.join(", ")}`,
+            },
+          ],
+          isError: true,
+        };
+      }
+
       const apiData = await fetchComponentAPI(componentName);
 
       return {
@@ -270,6 +310,22 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           isError: true,
         };
       }
+
+      // Validate component name
+      const isValid = await validateComponentName(componentName);
+      if (!isValid) {
+        const validNames = await getValidComponentNames();
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Component "${componentName}" not found. Available components: ${validNames.join(", ")}`,
+            },
+          ],
+          isError: true,
+        };
+      }
+
       const examples = await fetchComponentExamples(componentName);
 
       return {
