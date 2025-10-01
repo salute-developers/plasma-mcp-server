@@ -220,20 +220,62 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
               title: "Plasma Design System - Getting Started",
               description: "Welcome to the Plasma design system! This MCP server provides access to component documentation, APIs, and examples.",
               quickStart: {
-                steps: [
-                  "1. Use 'list_components' to see all available components",
-                  "2. Use 'get_component_api' to get detailed API documentation for any component",
-                  "3. Use 'get_component_examples' to get code examples and usage patterns",
-                  "4. Use 'list_themes' to see available themes (coming soon)",
-                  "5. Use 'get_theme' to get design tokens for themes (coming soon)"
-                ]
-              },
-              resources: {
-                officialDocs: "https://plasma.sberdevices.ru/",
-                github: "https://github.com/sberdevices/plasma",
-                npm: "@sberdevices/plasma-ui"
-              },
-              note: "This server requires the Plasma documentation server to be running at localhost:8080 - no fallback data is provided"
+                'with styled components': {
+                  steps: [
+                    "1. Install dependencies",
+                    "npm install --save react react-dom",
+                    "npm install --save @salutejs/plasma-web @salutejs/plasma-themes",
+                    "npm install --save styled-components@5.3.1",
+                    "2. Add the following to your index.html file into the <head> tag:",
+                    "```html",
+                    "<link rel=\"stylesheet\" href=\"https://cdn-app.sberdevices.ru/shared-static/0.0.0/styles/SBSansText.0.2.0.css\" />",
+                    "<link rel=\"stylesheet\" href=\"https://cdn-app.sberdevices.ru/shared-static/0.0.0/styles/SBSansDisplay.0.2.0.css\" />",
+                    "```",
+                    "3. Configure theming:",
+                    "```tsx",
+                    "import { createGlobalStyle } from 'styled-components';",
+                    "import { plasma_web__light } from '@salutejs/plasma-themes';",
+                    "export const Theme = createGlobalStyle(plasma_web__light);",
+                    "4. Add Theme Component to the root of your application:",
+                    "```tsx",
+                    "import { Theme } from './Theme';",
+                    "function App() {",
+                    "  return (",
+                    "    <>",
+                    "      <Theme />",
+                    "      <Button>Click me</Button>",
+                    "    </>",
+                    "  );",
+                    "}",
+                    "```",
+                    "5. Use the components:",
+                    "```tsx",
+                    "import { Button } from '@salutejs/plasma-web';",
+                    "```",
+                  ]
+                },
+                'with vanilla css': {
+                  steps: [
+                    "1. Install dependencies",
+                    "npm install --save react react-dom",
+                    "npm install --save @salutejs/plasma-web @salutejs/plasma-themes",
+                    "2. Add the following to your index.html file into the <head> tag:",
+                    "```html",
+                    "<link rel=\"stylesheet\" href=\"https://cdn-app.sberdevices.ru/shared-static/0.0.0/styles/SBSansText.0.2.0.css\" />",
+                    "<link rel=\"stylesheet\" href=\"https://cdn-app.sberdevices.ru/shared-static/0.0.0/styles/SBSansDisplay.0.2.0.css\" />",
+                    "```",
+                    "3. Configure theming in the root of your application:",
+                    "```tsx",
+                    "import '@salutejs/plasma-themes/css/plasma_web__dark.css';",
+                    "```",
+                    "4. Use the components:",
+                    "```tsx",
+                    "import { Button } from '@salutejs/plasma-web';",
+                    "```",
+                  ]
+                }
+              }
+              
             }, null, 2)
           },
         ],
