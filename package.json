@@ -1,40 +1,31 @@
 {
-  "name": "mcp-plasma-server",
-  "version": "0.0.1",
-  "description": "MCP server for Plasma design system components",
-  "main": "dist/index.js",
+  "name": "plasma-mcp-server",
+  "version": "1.0.0",
+  "description": "MCP server for Plasma component knowledge base",
   "type": "module",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/index.ts",
     "start": "node dist/index.js",
-    "start:dev": "NODE_ENV=development npx tsx src/index.ts",
-    "start:prod": "NODE_ENV=production node dist/index.js",
-    "dev": "tsc --watch",
-    "clean": "rm -rf dist",
-    "verify": "node -e \"console.log('✅ Server builds and starts successfully'); process.exit(0)\"",
     "inspect": "npx @modelcontextprotocol/inspector node dist/index.js",
-    "inspect:dev": "NODE_ENV=development npx @modelcontextprotocol/inspector npx tsx src/index.ts",
-    "inspect:prod": "NODE_ENV=production npx @modelcontextprotocol/inspector node dist/index.js",
-    "inspect:stop": "pkill -f 'mcp-inspector' && pkill -f '@modelcontextprotocol/inspector' || true"
+    "inspect:dev": "npx @modelcontextprotocol/inspector npx tsx src/index.ts"
   },
   "keywords": [
     "mcp",
     "plasma",
-    "design-system",
-    "components"
+    "design-system"
   ],
-  "author": "",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.18.0",
-    "dotenv": "^16.4.5",
-    "node-fetch": "^3.3.2"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "^0.16.8",
-    "@types/node": "^20.0.0",
+    "@types/node": "^20.17.0",
     "prettier": "^3.8.1",
-    "tsx": "^4.7.0",
-    "typescript": "^5.0.0"
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
   }
 }
