@@ -51,7 +51,7 @@ export function createServer() {
         'list_components',
         {
             title: 'List Components',
-            description: 'Return all components from the knowledge base index.',
+            description: 'This tool retrieves the names of all available PLASMA components.',
             inputSchema: {},
         },
         async () => {
@@ -71,7 +71,8 @@ export function createServer() {
         'get_component',
         {
             title: 'Get Component',
-            description: 'Return full component passport JSON.',
+            description:
+                'This tool provides complete information about any Plasma component, including properties, design props (size, variant, etc.), attributes, configuration options, and practical implementation examples—from basic usage to advanced scenarios with complete code snippets.',
             inputSchema: {
                 name: z.string().min(1),
             },
@@ -90,7 +91,8 @@ export function createServer() {
         'get_component_props',
         {
             title: 'Get Component Props',
-            description: 'Return only component props from its passport.',
+            description:
+                'This tool provides comprehensive details about a specific Plasma component, including its properties, design-related props (such as size and variant), attributes, and available configuration options.',
             inputSchema: {
                 name: z.string().min(1),
             },
@@ -109,7 +111,8 @@ export function createServer() {
         'get_component_examples',
         {
             title: 'Get Component Examples',
-            description: 'Return only component examples from its passport.',
+            description:
+                'This tool retrieves example code and usage patterns with complete code snippets. Access practical implementation examples for any Plasma component: from basic usage to advanced configurations and common use cases.',
             inputSchema: {
                 name: z.string().min(1),
             },
@@ -121,28 +124,6 @@ export function createServer() {
             } catch (error) {
                 return asErrorResult(error);
             }
-        },
-    );
-
-    server.registerResource(
-        'button-component-resource',
-        'ds://components/Button',
-        {
-            title: 'Button Component Passport',
-            description: 'Full Button component passport from Plasma knowledge base.',
-            mimeType: 'application/json',
-        },
-        async (uri) => {
-            const component = await kb.getComponent('Button');
-            return {
-                contents: [
-                    {
-                        uri: uri.href,
-                        mimeType: 'application/json',
-                        text: JSON.stringify(component, null, 2),
-                    },
-                ],
-            };
         },
     );
 

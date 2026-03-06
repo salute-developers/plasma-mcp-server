@@ -9,8 +9,7 @@ MCP server for Plasma component docs, working over stdio.
   - `get_component`
   - `get_component_props`
   - `get_component_examples`
-- Resource:
-  - `ds://components/Button`
+
 - Runtime validation of knowledge-base payloads with `zod`
 
 ## Data source
