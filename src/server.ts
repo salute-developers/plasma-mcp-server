@@ -101,6 +101,24 @@ export function createServer() {
     );
 
     server.registerTool(
+        'get_functions',
+        {
+            title: 'Functions',
+            description:
+                'This tool retrieves the combined description of imported Plasma hocs, hooks, mixins, and utils from the functions section.',
+            inputSchema: {},
+        },
+        async () => {
+            try {
+                const functions = await kb.getFunctions();
+                return asTextResult(functions);
+            } catch (error) {
+                return asErrorResult(error);
+            }
+        },
+    );
+
+    server.registerTool(
         'get_component',
         {
             title: 'Get Component',

@@ -83,6 +83,26 @@ export class PlasmaKnowledgeBaseClient {
         return fetchJson(guideUrl, installationGuideSchema, 'nextjs guide');
     }
 
+    async getFunctions() {
+        const section = await this.getFunctionsSection();
+        const indexUrl = new URL(section.href, this.manifestUrl).toString();
+        const payload = await fetchJson(indexUrl, knowledgeBaseIndexPayloadSchema, `${section.name} index`);
+        const items = normalizeKnowledgeBaseIndex(payload);
+        const documents = [];
+
+        for (const item of items) {
+            const documentUrl = new URL(item.href, indexUrl).toString();
+            const document = await fetchJson(documentUrl, installationGuideSchema, `functions/${item.name}`);
+            documents.push(document);
+        }
+
+        return {
+            name: section.name,
+            category: section.name,
+            items: documents,
+        };
+    }
+
     private async getManifest(): Promise<Manifest> {
         return fetchJson(this.manifestUrl, manifestSchema, 'manifest');
     }
@@ -134,6 +154,22 @@ export class PlasmaKnowledgeBaseClient {
         }
 
         throw new Error('manifest: next section not found');
+    }
+
+    private async getFunctionsSection(): Promise<ManifestSection> {
+        const manifest = await this.getManifest();
+
+        for (const [rawName, href] of Object.entries(manifest.paths)) {
+            if (!href) {
+                continue;
+            }
+
+            if (rawName === 'functions') {
+                return { name: rawName, href };
+            }
+        }
+
+        throw new Error('manifest: functions section not found');
     }
 
     private async getComponentsIndexContext(): Promise<SectionIndexContext> {
