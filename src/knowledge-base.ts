@@ -103,6 +103,26 @@ export class PlasmaKnowledgeBaseClient {
         };
     }
 
+    async getDesignSystemConfiguration() {
+        const section = await this.getDesignSection();
+        const indexUrl = new URL(section.href, this.manifestUrl).toString();
+        const payload = await fetchJson(indexUrl, knowledgeBaseIndexPayloadSchema, `${section.name} index`);
+        const items = normalizeKnowledgeBaseIndex(payload);
+        const documents = [];
+
+        for (const item of items) {
+            const documentUrl = new URL(item.href, indexUrl).toString();
+            const document = await fetchJson(documentUrl, installationGuideSchema, `design/${item.name}`);
+            documents.push(document);
+        }
+
+        return {
+            name: section.name,
+            category: section.name,
+            items: documents,
+        };
+    }
+
     private async getManifest(): Promise<Manifest> {
         return fetchJson(this.manifestUrl, manifestSchema, 'manifest');
     }
@@ -170,6 +190,22 @@ export class PlasmaKnowledgeBaseClient {
         }
 
         throw new Error('manifest: functions section not found');
+    }
+
+    private async getDesignSection(): Promise<ManifestSection> {
+        const manifest = await this.getManifest();
+
+        for (const [rawName, href] of Object.entries(manifest.paths)) {
+            if (!href) {
+                continue;
+            }
+
+            if (rawName === 'design') {
+                return { name: rawName, href };
+            }
+        }
+
+        throw new Error('manifest: design section not found');
     }
 
     private async getComponentsIndexContext(): Promise<SectionIndexContext> {

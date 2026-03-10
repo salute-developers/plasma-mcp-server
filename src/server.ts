@@ -119,6 +119,24 @@ export function createServer() {
     );
 
     server.registerTool(
+        'get_design_system_configuration',
+        {
+            title: 'Design System Configuration',
+            description:
+                'This tool retrieves the combined Plasma design system configuration, including typography, colors, and spacing documentation.',
+            inputSchema: {},
+        },
+        async () => {
+            try {
+                const configuration = await kb.getDesignSystemConfiguration();
+                return asTextResult(configuration);
+            } catch (error) {
+                return asErrorResult(error);
+            }
+        },
+    );
+
+    server.registerTool(
         'get_component',
         {
             title: 'Get Component',
