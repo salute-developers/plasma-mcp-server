@@ -1,12 +1,14 @@
 import { ZodSchema } from 'zod';
 import {
     componentPassportSchema,
-    componentsIndexSchema,
+    knowledgeBaseIndexPayloadSchema,
     manifestSchema,
-    type ComponentIndexItem,
+    normalizeKnowledgeBaseIndex,
     type ComponentPassport,
-    type ComponentsIndex,
+    type KnowledgeBaseIndex,
+    type KnowledgeBaseIndexItem,
     type Manifest,
+    type ManifestSection,
 } from './schemas.js';
 
 export class ComponentNotFoundError extends Error {
@@ -16,42 +18,27 @@ export class ComponentNotFoundError extends Error {
     }
 }
 
-type ComponentsIndexContext = {
+type SectionIndexContext = {
+    section: ManifestSection;
     url: string;
-    data: ComponentsIndex;
+    data: KnowledgeBaseIndex;
 };
 
 export class PlasmaKnowledgeBaseClient {
     private readonly manifestUrl: string;
-    private manifestPromise?: Promise<Manifest>;
-    private componentsIndexContextPromise?: Promise<ComponentsIndexContext>;
-    private componentCache = new Map<string, Promise<ComponentPassport>>();
 
     constructor(manifestUrl: string) {
         this.manifestUrl = manifestUrl;
     }
 
-    async listComponents(): Promise<ComponentIndexItem[]> {
+    async listComponents(): Promise<KnowledgeBaseIndexItem[]> {
         const context = await this.getComponentsIndexContext();
-        return context.data.items;
+        return context.data;
     }
 
     async getComponent(componentName: string): Promise<ComponentPassport> {
         const { context, item } = await this.resolveComponentItem(componentName);
-        const cacheKey = item.name;
-        const cached = this.componentCache.get(cacheKey);
-
-        if (cached) {
-            return cached;
-        }
-
-        const loadPromise = this.loadComponent(context.url, item).catch((error) => {
-            this.componentCache.delete(cacheKey);
-            throw error;
-        });
-
-        this.componentCache.set(cacheKey, loadPromise);
-        return loadPromise;
+        return this.loadComponent(context.url, item);
     }
 
     async getComponentProps(componentName: string) {
@@ -65,51 +52,58 @@ export class PlasmaKnowledgeBaseClient {
     }
 
     private async getManifest(): Promise<Manifest> {
-        if (!this.manifestPromise) {
-            this.manifestPromise = fetchJson(this.manifestUrl, manifestSchema, 'manifest');
-        }
-
-        return this.manifestPromise;
+        return fetchJson(this.manifestUrl, manifestSchema, 'manifest');
     }
 
-    private async getComponentsIndexContext(): Promise<ComponentsIndexContext> {
-        if (!this.componentsIndexContextPromise) {
-            this.componentsIndexContextPromise = this.loadComponentsIndexContext();
-        }
-
-        return this.componentsIndexContextPromise;
-    }
-
-    private async loadComponentsIndexContext(): Promise<ComponentsIndexContext> {
+    private async getComponentsSection(): Promise<ManifestSection> {
         const manifest = await this.getManifest();
-        const componentsIndexUrl = new URL(manifest.paths.componentsIndex, this.manifestUrl).toString();
-        const data = await fetchJson(componentsIndexUrl, componentsIndexSchema, 'components index');
+
+        for (const [rawName, href] of Object.entries(manifest.paths)) {
+            if (!href) {
+                continue;
+            }
+
+            const name = rawName === 'componentsIndex' ? 'components' : rawName;
+            if (name === 'components') {
+                return { name, href };
+            }
+        }
+
+        throw new Error('manifest: components section not found');
+    }
+
+    private async getComponentsIndexContext(): Promise<SectionIndexContext> {
+        const section = await this.getComponentsSection();
+        const indexUrl = new URL(section.href, this.manifestUrl).toString();
+        const payload = await fetchJson(indexUrl, knowledgeBaseIndexPayloadSchema, `${section.name} index`);
+        const data = normalizeKnowledgeBaseIndex(payload);
 
         return {
-            url: componentsIndexUrl,
+            section,
+            url: indexUrl,
             data,
         };
     }
 
     private async loadComponent(
-        componentsIndexUrl: string,
-        componentItem: ComponentIndexItem,
+        sectionIndexUrl: string,
+        componentItem: KnowledgeBaseIndexItem,
     ): Promise<ComponentPassport> {
-        const componentUrl = new URL(componentItem.href, componentsIndexUrl).toString();
+        const componentUrl = new URL(componentItem.href, sectionIndexUrl).toString();
         return fetchJson(componentUrl, componentPassportSchema, `component ${componentItem.name}`);
     }
 
     private async resolveComponentItem(
         requestedName: string,
-    ): Promise<{ context: ComponentsIndexContext; item: ComponentIndexItem }> {
+    ): Promise<{ context: SectionIndexContext; item: KnowledgeBaseIndexItem }> {
         const context = await this.getComponentsIndexContext();
 
-        const exact = context.data.items.find((item) => item.name === requestedName);
+        const exact = context.data.find((item) => item.name === requestedName);
         if (exact) {
             return { context, item: exact };
         }
 
-        const caseInsensitive = context.data.items.find(
+        const caseInsensitive = context.data.find(
             (item) => item.name.toLowerCase() === requestedName.toLowerCase(),
         );
 
@@ -119,7 +113,7 @@ export class PlasmaKnowledgeBaseClient {
 
         throw new ComponentNotFoundError(
             requestedName,
-            context.data.items.map((item) => item.name),
+            context.data.map((entry) => entry.name),
         );
     }
 }

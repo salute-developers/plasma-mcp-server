@@ -1,5 +1,15 @@
 import { z } from 'zod';
 
+const manifestPathsSchema = z
+    .object({
+        components: z.string().min(1).optional(),
+        componentsIndex: z.string().min(1).optional(),
+    })
+    .catchall(z.string().min(1))
+    .refine((paths) => Boolean(paths.components ?? paths.componentsIndex), {
+        message: 'paths must include components or componentsIndex',
+    });
+
 export const manifestSchema = z.object({
     builtAt: z.string(),
     source: z
@@ -7,21 +17,22 @@ export const manifestSchema = z.object({
             repo: z.string().url(),
         })
         .passthrough(),
-    paths: z.object({
-        componentsIndex: z.string().min(1),
-    }),
+    paths: manifestPathsSchema,
 });
 
-export const componentIndexItemSchema = z.object({
+export const knowledgeBaseIndexItemSchema = z.object({
     name: z.string().min(1),
     href: z.string().min(1),
     summary: z.string().optional(),
     category: z.string().optional(),
 });
 
-export const componentsIndexSchema = z.object({
-    items: z.array(componentIndexItemSchema),
-});
+export const knowledgeBaseIndexPayloadSchema = z.union([
+    z.array(knowledgeBaseIndexItemSchema),
+    z.object({
+        items: z.array(knowledgeBaseIndexItemSchema),
+    }),
+]);
 
 export const componentPropSchema = z.object({
     name: z.string().min(1),
@@ -36,18 +47,33 @@ export const componentExampleSchema = z.object({
     snippet: z.string().min(1),
 });
 
-export const componentPassportSchema = z.object({
+export const componentPassportSchema = z
+    .object({
+        name: z.string().min(1),
+        package: z.string().optional(),
+        category: z.string().optional(),
+        summary: z.string().optional(),
+        api: z.object({
+            props: z.array(componentPropSchema),
+        }),
+        examples: z.array(componentExampleSchema),
+    })
+    .passthrough();
+
+export const manifestSectionSchema = z.object({
     name: z.string().min(1),
-    package: z.string().optional(),
-    category: z.string().optional(),
-    summary: z.string().optional(),
-    api: z.object({
-        props: z.array(componentPropSchema),
-    }),
-    examples: z.array(componentExampleSchema),
+    href: z.string().min(1),
 });
 
+export function normalizeKnowledgeBaseIndex(
+    value: KnowledgeBaseIndexPayload,
+): KnowledgeBaseIndexItem[] {
+    return Array.isArray(value) ? value : value.items;
+}
+
 export type Manifest = z.infer<typeof manifestSchema>;
-export type ComponentsIndex = z.infer<typeof componentsIndexSchema>;
-export type ComponentIndexItem = z.infer<typeof componentIndexItemSchema>;
+export type ManifestSection = z.infer<typeof manifestSectionSchema>;
+export type KnowledgeBaseIndexPayload = z.infer<typeof knowledgeBaseIndexPayloadSchema>;
+export type KnowledgeBaseIndex = KnowledgeBaseIndexItem[];
+export type KnowledgeBaseIndexItem = z.infer<typeof knowledgeBaseIndexItemSchema>;
 export type ComponentPassport = z.infer<typeof componentPassportSchema>;

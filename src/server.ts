@@ -57,10 +57,7 @@ export function createServer() {
         async () => {
             try {
                 const components = await kb.listComponents();
-                return asTextResult({
-                    components,
-                    total: components.length,
-                });
+                return asTextResult(components);
             } catch (error) {
                 return asErrorResult(error);
             }
