@@ -1,10 +1,12 @@
 import { ZodSchema } from 'zod';
 import {
     componentPassportSchema,
+    installationGuideSchema,
     knowledgeBaseIndexPayloadSchema,
     manifestSchema,
     normalizeKnowledgeBaseIndex,
     type ComponentPassport,
+    type InstallationGuide,
     type KnowledgeBaseIndex,
     type KnowledgeBaseIndexItem,
     type Manifest,
@@ -51,6 +53,21 @@ export class PlasmaKnowledgeBaseClient {
         return component.examples;
     }
 
+    async getInstallationGuide(): Promise<InstallationGuide> {
+        const section = await this.getIntroSection();
+        const indexUrl = new URL(section.href, this.manifestUrl).toString();
+        const payload = await fetchJson(indexUrl, knowledgeBaseIndexPayloadSchema, `${section.name} index`);
+        const items = normalizeKnowledgeBaseIndex(payload);
+        const guideItem = items[0];
+
+        if (!guideItem) {
+            throw new Error('intro index: installation guide not found');
+        }
+
+        const guideUrl = new URL(guideItem.href, indexUrl).toString();
+        return fetchJson(guideUrl, installationGuideSchema, 'installation guide');
+    }
+
     private async getManifest(): Promise<Manifest> {
         return fetchJson(this.manifestUrl, manifestSchema, 'manifest');
     }
@@ -70,6 +87,22 @@ export class PlasmaKnowledgeBaseClient {
         }
 
         throw new Error('manifest: components section not found');
+    }
+
+    private async getIntroSection(): Promise<ManifestSection> {
+        const manifest = await this.getManifest();
+
+        for (const [rawName, href] of Object.entries(manifest.paths)) {
+            if (!href) {
+                continue;
+            }
+
+            if (rawName === 'intro') {
+                return { name: rawName, href };
+            }
+        }
+
+        throw new Error('manifest: intro section not found');
     }
 
     private async getComponentsIndexContext(): Promise<SectionIndexContext> {

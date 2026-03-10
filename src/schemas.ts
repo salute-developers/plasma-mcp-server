@@ -60,6 +60,15 @@ export const componentPassportSchema = z
     })
     .passthrough();
 
+export const installationGuideSchema = z
+    .object({
+        name: z.string().min(1),
+        package: z.string().optional(),
+        category: z.string().optional(),
+        summary: z.string().optional(),
+    })
+    .passthrough();
+
 export const manifestSectionSchema = z.object({
     name: z.string().min(1),
     href: z.string().min(1),
@@ -77,3 +86,4 @@ export type KnowledgeBaseIndexPayload = z.infer<typeof knowledgeBaseIndexPayload
 export type KnowledgeBaseIndex = KnowledgeBaseIndexItem[];
 export type KnowledgeBaseIndexItem = z.infer<typeof knowledgeBaseIndexItemSchema>;
 export type ComponentPassport = z.infer<typeof componentPassportSchema>;
+export type InstallationGuide = z.infer<typeof installationGuideSchema>;

@@ -65,6 +65,24 @@ export function createServer() {
     );
 
     server.registerTool(
+        'get_installation_guide',
+        {
+            title: 'Installation Guide',
+            description:
+                'This tool retrieves the Plasma installation and setup guide. It describes how to hook a theme and tokens.',
+            inputSchema: {},
+        },
+        async () => {
+            try {
+                const guide = await kb.getInstallationGuide();
+                return asTextResult(guide);
+            } catch (error) {
+                return asErrorResult(error);
+            }
+        },
+    );
+
+    server.registerTool(
         'get_component',
         {
             title: 'Get Component',
