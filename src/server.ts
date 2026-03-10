@@ -83,6 +83,24 @@ export function createServer() {
     );
 
     server.registerTool(
+        'get_nextjs_guide',
+        {
+            title: 'Next.js Guide',
+            description:
+                'This tool retrieves the Plasma guide for connecting the library in a Next.js project.',
+            inputSchema: {},
+        },
+        async () => {
+            try {
+                const guide = await kb.getNextJsGuide();
+                return asTextResult(guide);
+            } catch (error) {
+                return asErrorResult(error);
+            }
+        },
+    );
+
+    server.registerTool(
         'get_component',
         {
             title: 'Get Component',

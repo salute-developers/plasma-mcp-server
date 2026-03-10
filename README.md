@@ -7,6 +7,7 @@ MCP server for Plasma component docs, working over stdio.
 - Tools:
   - `list_components`
   - `get_installation_guide`
+  - `get_nextjs_guide`
   - `get_component`
   - `get_component_props`
   - `get_component_examples`
