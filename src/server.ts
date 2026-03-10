@@ -137,6 +137,24 @@ export function createServer() {
     );
 
     server.registerTool(
+        'get_form_guide',
+        {
+            title: 'Form Guide',
+            description:
+                'This tool retrieves the combined Plasma form guides for native HTML forms, React Hook Form, and component support in these forms.',
+            inputSchema: {},
+        },
+        async () => {
+            try {
+                const guide = await kb.getFormGuide();
+                return asTextResult(guide);
+            } catch (error) {
+                return asErrorResult(error);
+            }
+        },
+    );
+
+    server.registerTool(
         'get_component',
         {
             title: 'Get Component',
