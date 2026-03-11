@@ -1,7 +1,7 @@
 {
-  "name": "plasma-mcp-server",
-  "version": "1.0.0",
-  "description": "MCP server for Plasma component knowledge base",
+  "name": "@salutejs/sdds-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for SDDS",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
