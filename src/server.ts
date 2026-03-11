@@ -155,6 +155,24 @@ export function createServer() {
     );
 
     server.registerTool(
+        'get_tokens',
+        {
+            title: 'Tokens',
+            description:
+                'This tool retrieves the list of Plasma tokens that can be reused in custom components.',
+            inputSchema: {},
+        },
+        async () => {
+            try {
+                const tokens = await kb.getTokens();
+                return asTextResult(tokens);
+            } catch (error) {
+                return asErrorResult(error);
+            }
+        },
+    );
+
+    server.registerTool(
         'get_component',
         {
             title: 'Get Component',

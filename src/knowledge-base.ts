@@ -143,6 +143,25 @@ export class PlasmaKnowledgeBaseClient {
         };
     }
 
+    async getTokens(): Promise<string[]> {
+        const section = await this.getTokensSection();
+        const indexUrl = new URL(section.href, this.manifestUrl).toString();
+        const payload = await fetchJson(indexUrl, knowledgeBaseIndexPayloadSchema, `${section.name} index`);
+        const items = normalizeKnowledgeBaseIndex(payload);
+        const tokens = new Set<string>();
+
+        for (const item of items) {
+            const documentUrl = new URL(item.href, indexUrl).toString();
+            const document = await fetchJson(documentUrl, installationGuideSchema, `tokens/${item.name}`);
+
+            for (const token of extractTokenNames(document.summary ?? '')) {
+                tokens.add(token);
+            }
+        }
+
+        return [...tokens];
+    }
+
     private async getManifest(): Promise<Manifest> {
         return fetchJson(this.manifestUrl, manifestSchema, 'manifest');
     }
@@ -244,6 +263,22 @@ export class PlasmaKnowledgeBaseClient {
         throw new Error('manifest: form section not found');
     }
 
+    private async getTokensSection(): Promise<ManifestSection> {
+        const manifest = await this.getManifest();
+
+        for (const [rawName, href] of Object.entries(manifest.paths)) {
+            if (!href) {
+                continue;
+            }
+
+            if (rawName === 'tokens') {
+                return { name: rawName, href };
+            }
+        }
+
+        throw new Error('manifest: tokens section not found');
+    }
+
     private async getComponentsIndexContext(): Promise<SectionIndexContext> {
         const section = await this.getComponentsSection();
         const indexUrl = new URL(section.href, this.manifestUrl).toString();
@@ -316,4 +351,9 @@ async function fetchJson<T>(url: string, schema: ZodSchema<T>, label: string): P
     }
 
     return parsed.data;
+}
+
+function extractTokenNames(summary: string): string[] {
+    const matches = summary.matchAll(/export declare const ([A-Za-z0-9_]+)\s*=/g);
+    return [...matches].map((match) => match[1]);
 }
