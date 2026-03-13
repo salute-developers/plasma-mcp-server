@@ -41,9 +41,10 @@ function asErrorResult(error: unknown) {
 export async function createServer() {
     const manifestConfig = await getManifestConfig();
     const kb = new PlasmaKnowledgeBaseClient(manifestConfig.manifestUrl);
+    const libraryName = manifestConfig.lib;
 
     const server = new McpServer({
-        name: 'plasma-mcp-server',
+        name: 'mcp-server',
         version: '1.0.0',
     });
 
@@ -51,7 +52,7 @@ export async function createServer() {
         'list_components',
         {
             title: 'List Components',
-            description: 'This tool retrieves the names of all available PLASMA components.',
+            description: `This tool retrieves the names of all available ${libraryName} components.`,
             inputSchema: {},
         },
         async () => {
@@ -68,8 +69,7 @@ export async function createServer() {
         'get_installation_guide',
         {
             title: 'Installation Guide',
-            description:
-                'This tool retrieves the Plasma installation and setup guide. It describes how to hook a theme and tokens.',
+            description: `This tool retrieves the ${libraryName} installation and setup guide. It describes how to hook a theme and tokens.`,
             inputSchema: {},
         },
         async () => {
@@ -86,8 +86,7 @@ export async function createServer() {
         'get_nextjs_guide',
         {
             title: 'Next.js Guide',
-            description:
-                'This tool retrieves the Plasma guide for connecting the library in a Next.js project.',
+            description: `This tool retrieves the ${libraryName} guide for connecting the library in a Next.js project.`,
             inputSchema: {},
         },
         async () => {
@@ -104,8 +103,7 @@ export async function createServer() {
         'get_functions',
         {
             title: 'Functions',
-            description:
-                'This tool retrieves the combined description of imported Plasma hocs, hooks, mixins, and utils from the functions section.',
+            description: `This tool retrieves the combined description of imported ${libraryName} hocs, hooks, mixins, and utils from the functions section.`,
             inputSchema: {},
         },
         async () => {
@@ -122,8 +120,7 @@ export async function createServer() {
         'get_design_system_configuration',
         {
             title: 'Design System Configuration',
-            description:
-                'This tool retrieves the combined Plasma design system configuration, including typography, colors, and spacing documentation.',
+            description: `This tool retrieves the combined ${libraryName} design system configuration, including typography, colors, and spacing documentation.`,
             inputSchema: {},
         },
         async () => {
@@ -140,8 +137,7 @@ export async function createServer() {
         'get_form_guide',
         {
             title: 'Form Guide',
-            description:
-                'This tool retrieves the combined Plasma form guides for native HTML forms, React Hook Form, and component support in these forms.',
+            description: `This tool retrieves the combined ${libraryName} form guides for native HTML forms, React Hook Form, and component support in these forms.`,
             inputSchema: {},
         },
         async () => {
@@ -158,8 +154,7 @@ export async function createServer() {
         'get_tokens',
         {
             title: 'Tokens',
-            description:
-                'This tool retrieves the list of Plasma tokens that can be reused in custom components.',
+            description: `This tool retrieves the list of ${libraryName} tokens that can be reused in custom components.`,
             inputSchema: {},
         },
         async () => {
@@ -176,8 +171,7 @@ export async function createServer() {
         'get_component',
         {
             title: 'Get Component',
-            description:
-                'This tool provides complete information about any Plasma component, including properties, design props (size, variant, etc.), attributes, configuration options, and practical implementation examples—from basic usage to advanced scenarios with complete code snippets.',
+            description: `This tool provides complete information about any ${libraryName} component, including properties, design props (size, variant, etc.), attributes, configuration options, and practical implementation examples from basic usage to advanced scenarios with complete code snippets.`,
             inputSchema: {
                 name: z.string().min(1),
             },
@@ -196,8 +190,7 @@ export async function createServer() {
         'get_component_props',
         {
             title: 'Get Component Props',
-            description:
-                'This tool provides comprehensive details about a specific Plasma component, including its properties, design-related props (such as size and variant), attributes, and available configuration options.',
+            description: `This tool provides comprehensive details about a specific ${libraryName} component, including its properties, design-related props (such as size and variant), attributes, and available configuration options.`,
             inputSchema: {
                 name: z.string().min(1),
             },
@@ -216,8 +209,7 @@ export async function createServer() {
         'get_component_examples',
         {
             title: 'Get Component Examples',
-            description:
-                'This tool retrieves example code and usage patterns with complete code snippets. Access practical implementation examples for any Plasma component: from basic usage to advanced configurations and common use cases.',
+            description: `This tool retrieves example code and usage patterns with complete code snippets. Access practical implementation examples for any ${libraryName} component, from basic usage to advanced configurations and common use cases.`,
             inputSchema: {
                 name: z.string().min(1),
             },
