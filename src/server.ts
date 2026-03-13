@@ -1,6 +1,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { getManifestUrl } from './config.js';
+import { getManifestConfig } from './config.js';
 import { ComponentNotFoundError, PlasmaKnowledgeBaseClient } from './knowledge-base.js';
 
 function formatError(error: unknown): string {
@@ -38,9 +38,9 @@ function asErrorResult(error: unknown) {
     };
 }
 
-export function createServer() {
-    const manifestUrl = getManifestUrl();
-    const kb = new PlasmaKnowledgeBaseClient(manifestUrl);
+export async function createServer() {
+    const manifestConfig = await getManifestConfig();
+    const kb = new PlasmaKnowledgeBaseClient(manifestConfig.manifestUrl);
 
     const server = new McpServer({
         name: 'plasma-mcp-server',
@@ -234,6 +234,6 @@ export function createServer() {
 
     return {
         server,
-        manifestUrl,
+        manifestConfig,
     };
 }
