@@ -29,13 +29,6 @@ Defaults:
 - `lib`: `plasma-web`
 - `version`: `latest`
 
-Supported `lib` values:
-
-- `plasma-web`
-- `plasma-b2c`
-- `plasma-giga`
-- `sdds-finai`
-
 If the requested `version` is not found, the server falls back to `latest`.
 
 ## Install
