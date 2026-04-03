@@ -1,6 +1,15 @@
 const MANIFEST_BASE_URL = 'https://plasma.sberdevices.ru/mcp';
 
-export const SUPPORTED_LIBS = ['plasma-web', 'plasma-b2c', 'plasma-giga', 'sdds-finai'] as const;
+export const SUPPORTED_LIBS = [
+    'plasma-web',
+    'plasma-b2c',
+    'plasma-giga',
+    'sdds-finai',
+    'sdds-cs',
+    'sdds-netology',
+    'sdds-platform-ai',
+    'sdds-serv',
+] as const;
 export const DEFAULT_LIB = 'plasma-web';
 export const DEFAULT_VERSION = 'latest';
 
@@ -84,9 +93,7 @@ function parseLib(lib: string): SupportedLib {
         return lib;
     }
 
-    throw new Error(
-        `Unsupported lib "${lib}". Expected one of: ${SUPPORTED_LIBS.join(', ')}`,
-    );
+    throw new Error(`Unsupported lib "${lib}". Expected one of: ${SUPPORTED_LIBS.join(', ')}`);
 }
 
 function isSupportedLib(value: string): value is SupportedLib {
