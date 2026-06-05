@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+// Отключаем проверку сертов, т.к. в сигме возникают проблемы с самоподписными сертами.
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { createServer } from './server.js';
 
