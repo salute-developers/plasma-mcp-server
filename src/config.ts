@@ -4,11 +4,16 @@ export const SUPPORTED_LIBS = [
     'plasma-web',
     'plasma-b2c',
     'plasma-giga',
+    'plasma-homeds',
     'sdds-finai',
     'sdds-cs',
     'sdds-netology',
     'sdds-platform-ai',
     'sdds-serv',
+    'sdds-bizcom',
+    'sdds-dfa',
+    'sdds-insol',
+    'sdds-scan',
 ] as const;
 export const DEFAULT_LIB = 'plasma-web';
 export const DEFAULT_VERSION = 'latest';
