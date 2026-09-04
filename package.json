@@ -1,12 +1,17 @@
 {
   "name": "@salutejs/sdds-mcp",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "MCP server for SDDS",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./icon-search": {
+      "types": "./dist/icon-search.d.ts",
+      "import": "./dist/icon-search.js",
+      "default": "./dist/icon-search.js"
+    }
   },
   "bin": {
     "sdds-mcp": "dist/index.js"
