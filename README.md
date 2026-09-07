@@ -6,6 +6,7 @@ MCP server for Plasma component docs, working over stdio.
 
 - Tools:
   - `list_components`
+  - `search_icons`
   - `get_installation_guide`
   - `get_nextjs_guide`
   - `get_functions`
@@ -23,6 +24,10 @@ MCP server for Plasma component docs, working over stdio.
 Manifest URL format:
 
 `https://plasma.sberdevices.ru/mcp/<lib>/<version>/manifest.json`
+
+SDDS Icons manifest:
+
+`https://plasma.sberdevices.ru/mcp/sdds-icons/manifest.json`
 
 Defaults:
 
