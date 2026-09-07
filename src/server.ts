@@ -1,6 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { getManifestConfig } from './config.js';
+import { IconManifestClient } from './icon-manifest-client.js';
+import { searchIcons } from './icon-search.js';
 import { ComponentNotFoundError, PlasmaKnowledgeBaseClient } from './knowledge-base.js';
 
 function formatError(error: unknown): string {
@@ -41,6 +43,7 @@ function asErrorResult(error: unknown) {
 export async function createServer() {
     const manifestConfig = await getManifestConfig();
     const kb = new PlasmaKnowledgeBaseClient(manifestConfig.manifestUrl);
+    const icons = new IconManifestClient();
     const libraryName = manifestConfig.lib;
 
     const server = new McpServer({
@@ -59,6 +62,34 @@ export async function createServer() {
             try {
                 const components = await kb.listComponents();
                 return asTextResult(components);
+            } catch (error) {
+                return asErrorResult(error);
+            }
+        },
+    );
+
+    server.registerTool(
+        'search_icons',
+        {
+            title: 'Search SDDS Icons',
+            description:
+                'Searches available SDDS Icons by component name, category, or metadata tags. Use it before writing code when the exact icon component name is unknown. The query may contain one or more words. Results are ordered by relevance and contain the component name, category, aliases, and available sizes. Import the selected icon from @salutejs/sdds-icons/<size>. Returns an empty array when no matching icons are found.',
+            inputSchema: {
+                query: z.string().trim().min(1).describe('Icon name or a phrase describing its meaning or purpose.'),
+                limit: z
+                    .number()
+                    .int()
+                    .min(1)
+                    .max(50)
+                    .optional()
+                    .describe('Maximum number of results. Defaults to 20.'),
+            },
+        },
+        async ({ query, limit }) => {
+            try {
+                const manifest = await icons.getManifest();
+                const result = searchIcons(manifest, query, { limit });
+                return asTextResult(result);
             } catch (error) {
                 return asErrorResult(error);
             }

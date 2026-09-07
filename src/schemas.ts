@@ -20,6 +20,22 @@ export const manifestSchema = z.object({
     paths: manifestPathsSchema,
 });
 
+const iconSizeSchema = z.union([z.literal(16), z.literal(24), z.literal(36)]);
+
+export const iconManifestSchema = z.object({
+    schemaVersion: z.number().int(),
+    version: z.string().min(1),
+    builtAt: z.string().min(1),
+    icons: z.array(
+        z.object({
+            name: z.string().min(1),
+            category: z.string().min(1),
+            aliases: z.array(z.string()),
+            sizes: z.array(iconSizeSchema).min(1),
+        }),
+    ),
+});
+
 export const knowledgeBaseIndexItemSchema = z.object({
     name: z.string().min(1),
     href: z.string().min(1),
