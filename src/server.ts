@@ -229,44 +229,6 @@ export async function createServer() {
         },
     );
 
-    registerTool(
-        'get_component_props',
-        {
-            title: 'Get Component Props',
-            description: `This tool provides comprehensive details about a specific ${libraryName} component, including its properties, design-related props (such as size and variant), attributes, and available configuration options.`,
-            inputSchema: {
-                name: z.string().min(1),
-            },
-        },
-        async ({ name }) => {
-            try {
-                const props = await kb.getComponentProps(name);
-                return asTextResult(props);
-            } catch (error) {
-                return asErrorResult(error);
-            }
-        },
-    );
-
-    registerTool(
-        'get_component_examples',
-        {
-            title: 'Get Component Examples',
-            description: `This tool retrieves example code and usage patterns with complete code snippets. Access practical implementation examples for any ${libraryName} component, from basic usage to advanced configurations and common use cases.`,
-            inputSchema: {
-                name: z.string().min(1),
-            },
-        },
-        async ({ name }) => {
-            try {
-                const examples = await kb.getComponentExamples(name);
-                return asTextResult(examples);
-            } catch (error) {
-                return asErrorResult(error);
-            }
-        },
-    );
-
     return {
         server,
         manifestConfig,

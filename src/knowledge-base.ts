@@ -44,16 +44,6 @@ export class PlasmaKnowledgeBaseClient {
         return this.loadComponent(context.url, item);
     }
 
-    async getComponentProps(componentName: string) {
-        const component = await this.getComponent(componentName);
-        return component.api.props;
-    }
-
-    async getComponentExamples(componentName: string) {
-        const component = await this.getComponent(componentName);
-        return component.examples;
-    }
-
     async getInstallationGuide(): Promise<InstallationGuide> {
         const section = await this.getIntroSection();
         const indexUrl = new URL(section.href, this.manifestUrl).toString();

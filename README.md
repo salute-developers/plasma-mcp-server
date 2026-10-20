@@ -14,8 +14,6 @@ MCP server for Plasma component docs, working over stdio.
   - `get_form_guide`
   - `get_tokens`
   - `get_component`
-  - `get_component_props`
-  - `get_component_examples`
 
 - Runtime validation of knowledge-base payloads with `zod`
 
