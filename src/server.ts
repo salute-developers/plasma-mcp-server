@@ -43,6 +43,8 @@ function asErrorResult(error: unknown) {
 export async function createServer() {
     const manifestConfig = await getManifestConfig();
     const kb = new PlasmaKnowledgeBaseClient(manifestConfig.manifestUrl);
+    const manifest = await kb.getManifest();
+    const allowedTools = new Set(manifest.tools);
     const icons = new IconManifestClient();
     const libraryName = manifestConfig.lib;
 
@@ -51,7 +53,17 @@ export async function createServer() {
         version: '1.0.0',
     });
 
-    server.registerTool(
+    const registerTool = (
+        name: string,
+        config: Parameters<typeof server.registerTool>[1],
+        handler: Parameters<typeof server.registerTool>[2],
+    ): void => {
+        if (allowedTools.has(name)) {
+            server.registerTool(name, config, handler);
+        }
+    };
+
+    registerTool(
         'list_components',
         {
             title: 'List Components',
@@ -68,7 +80,7 @@ export async function createServer() {
         },
     );
 
-    server.registerTool(
+    registerTool(
         'search_icons',
         {
             title: 'Search SDDS Icons',
@@ -96,7 +108,7 @@ export async function createServer() {
         },
     );
 
-    server.registerTool(
+    registerTool(
         'get_installation_guide',
         {
             title: 'Installation Guide',
@@ -113,7 +125,7 @@ export async function createServer() {
         },
     );
 
-    server.registerTool(
+    registerTool(
         'get_nextjs_guide',
         {
             title: 'Next.js Guide',
@@ -130,7 +142,7 @@ export async function createServer() {
         },
     );
 
-    server.registerTool(
+    registerTool(
         'get_functions',
         {
             title: 'Functions',
@@ -147,7 +159,7 @@ export async function createServer() {
         },
     );
 
-    server.registerTool(
+    registerTool(
         'get_design_system_configuration',
         {
             title: 'Design System Configuration',
@@ -164,7 +176,7 @@ export async function createServer() {
         },
     );
 
-    server.registerTool(
+    registerTool(
         'get_form_guide',
         {
             title: 'Form Guide',
@@ -181,7 +193,7 @@ export async function createServer() {
         },
     );
 
-    server.registerTool(
+    registerTool(
         'get_tokens',
         {
             title: 'Tokens',
@@ -198,7 +210,7 @@ export async function createServer() {
         },
     );
 
-    server.registerTool(
+    registerTool(
         'get_component',
         {
             title: 'Get Component',
@@ -217,7 +229,7 @@ export async function createServer() {
         },
     );
 
-    server.registerTool(
+    registerTool(
         'get_component_props',
         {
             title: 'Get Component Props',
@@ -236,7 +248,7 @@ export async function createServer() {
         },
     );
 
-    server.registerTool(
+    registerTool(
         'get_component_examples',
         {
             title: 'Get Component Examples',

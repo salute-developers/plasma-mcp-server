@@ -17,6 +17,7 @@ export const manifestSchema = z.object({
             repo: z.string().url(),
         })
         .passthrough(),
+    tools: z.array(z.string().min(1)),
     paths: manifestPathsSchema,
 });
 
@@ -90,9 +91,7 @@ export const manifestSectionSchema = z.object({
     href: z.string().min(1),
 });
 
-export function normalizeKnowledgeBaseIndex(
-    value: KnowledgeBaseIndexPayload,
-): KnowledgeBaseIndexItem[] {
+export function normalizeKnowledgeBaseIndex(value: KnowledgeBaseIndexPayload): KnowledgeBaseIndexItem[] {
     return Array.isArray(value) ? value : value.items;
 }
 
