@@ -28,6 +28,7 @@ type SectionIndexContext = {
 
 export class PlasmaKnowledgeBaseClient {
     private readonly manifestUrl: string;
+    private manifestPromise: Promise<Manifest> | undefined;
 
     constructor(manifestUrl: string) {
         this.manifestUrl = manifestUrl;
@@ -73,7 +74,7 @@ export class PlasmaKnowledgeBaseClient {
         const indexUrl = new URL(section.href, this.manifestUrl).toString();
         const payload = await fetchJson(indexUrl, knowledgeBaseIndexPayloadSchema, `${section.name} index`);
         const items = normalizeKnowledgeBaseIndex(payload);
-        const guideItem = items[0];
+        const guideItem = items.find((item) => item.name === 'next');
 
         if (!guideItem) {
             throw new Error('next index: guide not found');
@@ -163,8 +164,9 @@ export class PlasmaKnowledgeBaseClient {
         };
     }
 
-    private async getManifest(): Promise<Manifest> {
-        return fetchJson(this.manifestUrl, manifestSchema, 'manifest');
+    async getManifest(): Promise<Manifest> {
+        this.manifestPromise ??= fetchJson(this.manifestUrl, manifestSchema, 'manifest');
+        return this.manifestPromise;
     }
 
     private async getComponentsSection(): Promise<ManifestSection> {
@@ -208,7 +210,7 @@ export class PlasmaKnowledgeBaseClient {
                 continue;
             }
 
-            if (rawName === 'next') {
+            if (rawName === 'guides') {
                 return { name: rawName, href };
             }
         }
